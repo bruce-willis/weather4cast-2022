@@ -31,7 +31,6 @@ import numpy as np;
 
 #models
 from models.baseline_UNET3D import UNet as Base_UNET3D # 3_3_2 model selection
-from models.UNET3D_SWIN import SwinWeather
 
 VERBOSE = False
 # VERBOSE = True
@@ -45,6 +44,7 @@ class UNet_Lightning(pl.LightningModule):
         self.start_filts = params['init_filter_size']
         self.dropout_rate = params['dropout_rate']
         if UNet_params['model_name'] == '3D_UNET_SWIN':
+            from models.UNET3D_SWIN import SwinWeather
             self.model = SwinWeather()
         else:
             self.model = Base_UNET3D(in_channels=self.in_channels, start_filts =  self.start_filts, dropout_rate = self.dropout_rate)
