@@ -26,6 +26,7 @@ dataset:
 #   years:  [ '2019' ]  # stage-1
 #   splits_path: 'data/timestamps_and_splits_2019.csv'  # stage-1
   splits_path: 'data/timestamps_and_splits_stage2.csv'  # stage-2
+  add_val_to_train: True
   
   preprocess_OPERA:
     #  # var mean sd min median max length pos.weight.thr_0 

@@ -50,6 +50,9 @@ class DataModule(pl.LightningDataModule):
             print("Loading TRAINING/VALIDATION dataset -- as test")
             self.train_ds = RainData('training', **self.params)
             self.val_ds = RainData('validation', **self.params)
+            if self.params.get('add_val_to_train', False):
+                print("Adding validation to training")
+                self.train_ds = torch.utils.data.ConcatDataset([self.train_ds, self.val_ds])
             print(f"Training dataset size: {len(self.train_ds)}")
         if mode in ['val']:
             print("Loading VALIDATION dataset -- as test")
