@@ -101,5 +101,7 @@ def iou_class(y_pred: t.Tensor, y_true: t.Tensor):
     else:
         iou = 0
 
-    iou = iou.cpu()
+    if isinstance(iou, t.Tensor):
+        iou = iou.cpu().item()
+    
     return iou

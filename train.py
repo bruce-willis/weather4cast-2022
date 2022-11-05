@@ -88,7 +88,7 @@ def load_model(Model, params, checkpoint_path=''):
         model = Model(params['model'], p)            
     else:
         print(f'-> Loading model checkpoint: {checkpoint_path}')
-        model = Model.load_from_checkpoint(checkpoint_path, UNet_params=params['model'], params=p)
+        model = Model.load_from_checkpoint(checkpoint_path, UNet_params=params['model'], params=p, strict=False)
     return model
 
 def get_trainer(gpus,params):
@@ -132,14 +132,14 @@ def get_trainer(gpus,params):
                          accelerator="gpu",
                          callbacks=callback_funcs,logger=tb_logger,
                          profiler='simple',precision=params['experiment']['precision'],
-                         strategy="ddp"
+                         strategy="ddp_find_unused_parameters_false", # ddp
                         )
 
     return trainer
 
 def do_predict(trainer, model, predict_params, test_data):
     scores = trainer.predict(model, dataloaders=test_data)
-    scores = torch.concat(scores)   
+    scores = torch.cat(scores)   
     tensor_to_submission_file(scores,predict_params)
 
 def do_test(trainer, model, test_data):
@@ -251,3 +251,4 @@ if __name__ == "__main__":
     python train.py --gpus 1 --mode predict  --config_path config_baseline.yaml  --checkpoint "lightning_logs/PATH-TO-YOUR-MODEL-LOGS/checkpoints/YOUR-CHECKPOINT-FILENAME.ckpt"
 
     """
+    
