@@ -45,7 +45,7 @@ class UNet_Lightning(pl.LightningModule):
         self.dropout_rate = params['dropout_rate']
         if UNet_params['model_name'] == '3D_UNET_SWIN':
             from models.UNET3D_SWIN import SwinWeather
-            self.model = SwinWeather()
+            self.model = SwinWeather(**UNet_params)
         else:
             self.model = Base_UNET3D(in_channels=self.in_channels, start_filts =  self.start_filts, dropout_rate = self.dropout_rate)
 

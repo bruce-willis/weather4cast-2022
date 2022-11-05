@@ -125,6 +125,7 @@ train:    # model training settings
 
 model:    # model definition settings
   model_name: 3D_UNET_SWIN
+  use_checkpoint: False
   in_channels: 11  
   gradient_clip_val: 2.0
   gradient_clip_algorithm: value

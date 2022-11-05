@@ -2,16 +2,13 @@ from monai.networks.nets import SwinUNETR
 import torch
 from torch import nn
 
-net = SwinUNETR(img_size=(32,256,256), in_channels=11, out_channels=1, depths=(2,4,2,2))
-
-
 class SwinWeather(nn.Module):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, use_checkpoint=False, **kwargs) -> None:
         super().__init__()
         self.input_shape = (32, 252, 252)
         self.target_shape = (4, 256, 256)
 
-        self.model = SwinUNETR(img_size=(32, 256, 256), in_channels=11, out_channels=1) 
+        self.model = SwinUNETR(img_size=(32, 256, 256), in_channels=11, out_channels=1, use_checkpoint=use_checkpoint) 
 
     def forward(self, x):
         x = torch.nn.functional.interpolate(x, size=self.target_shape)
