@@ -150,3 +150,7 @@ dmypy.json
 
 #vsc
 .vscode/
+
+# solution
+submission/archive/*
+!submission/archive/readme.md
