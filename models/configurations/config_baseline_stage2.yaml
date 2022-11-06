@@ -122,6 +122,7 @@ train:    # model training settings
   weight_decay: 2e-2 
   init_filter_size: 32
   dropout_rate: 0.4
+  restore_full_training: True
 
 model:    # model definition settings
   model_name: 3D_UNET_base
