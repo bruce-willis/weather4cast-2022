@@ -19,3 +19,7 @@
 ### swin_bceLoss:
 * Epoch 1: 0.2483156 (https://pastebin.com/Ruq26ZA4)
 * Epoch 3: 0.2516998 (https://pastebin.com/jCRqX8S9)
+
+
+### swin_bceLoss_16bit
+* Epoch 1: 0.2428661 (https://pastebin.com/UxS88xYh)
