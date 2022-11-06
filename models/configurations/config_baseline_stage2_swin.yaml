@@ -125,8 +125,16 @@ train:    # model training settings
 
 model:    # model definition settings
   model_name: 3D_UNET_SWIN
-  use_checkpoint: False
   in_channels: 11  
+  out_channels: 1
+  swin_input_shape: [32, 256, 256] # (t, h, w)
+  channel_conv_params:
+    dropout_rate: 0.5
+    pooling: False
+    normalization: instance
+    activation: rrelu
+  interpolate_mode: trilinear
+  use_checkpoint: False
   gradient_clip_val: 2.0
   gradient_clip_algorithm: value
 
