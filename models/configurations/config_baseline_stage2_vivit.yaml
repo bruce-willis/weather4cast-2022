@@ -109,7 +109,7 @@ dataset:
       standardise: True
     
 train:    # model training settings
-  batch_size: 32  # 16
+  batch_size: 8  # 16
   max_epochs: 90
   n_workers: 32  # 8
   loss: BCEWithLogitsLoss # requires pos_weight to be set
@@ -138,6 +138,9 @@ model:    # model definition settings
   dropout: 0.0
   emb_dropout: 0.0
   scale_dim: 4
+  use_checkpoint: False
+  gradient_clip_val: 2.0
+  gradient_clip_algorithm: value
 
 predict:  # model prediction settings
   region_to_predict: boxi_0015  # must match one of the names defined in 'dataset' / 'regions'

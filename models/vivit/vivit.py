@@ -205,7 +205,7 @@ class Transformer(nn.Module):
   
 class ViViT(nn.Module):
     def __init__(self, image_size=252, int_image_size=256, patch_size=16, num_predictions=32, num_frames=4, dim = 192, depth = 8, heads = 8, pool = 'cls', in_channels = 11, dropout = 0.,
-                 emb_dropout = 0., scale_dim = 4, ):
+                 emb_dropout = 0., scale_dim = 4, **kwargs):
         super().__init__()
         
         assert pool in {'cls', 'mean'}, 'pool type must be either cls (cls token) or mean (mean pooling)'
@@ -279,7 +279,7 @@ class ViViT(nn.Module):
 
         x = x.mean(dim = 1) if self.pool == 'mean' else x[:, 0]
 
-        return self.mlp_head(x).reshape(-1, 1, self.num_predictions, self.image_size, self.image_size)
+        return self.mlp_head(x).reshape(-1, self.num_predictions, 1, self.image_size, self.image_size)
 
 if __name__ == "__main__":
     device = torch.device("cuda")
