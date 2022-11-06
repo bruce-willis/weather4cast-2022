@@ -171,7 +171,9 @@ def train(params, gpus, mode, checkpoint_path, model=UNetModel):
         print("--- TRAIN MODE ---")
         print("------------------")
         trainer.fit(model, data)
-    
+        if not params['train'].get('restore_full_training', False) or not checkpoint_path:
+            checkpoint_path = None
+        trainer.fit(model, data, ckpt_path=checkpoint_path)
     
     if mode == "val":
     # ------------
