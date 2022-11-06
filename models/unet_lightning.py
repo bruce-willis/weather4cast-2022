@@ -191,6 +191,7 @@ class UNet_Lightning(pl.LightningModule):
         self.log(self.main_metric, avg_loss, batch_size=self.bs, sync_dist=True)
 
 
+    @torch.no_grad()
     def test_step(self, batch, batch_idx, phase='test'):
         x, y, metadata = batch
         if VERBOSE:
@@ -222,6 +223,7 @@ class UNet_Lightning(pl.LightningModule):
         
         return 0, y_hat
 
+    @torch.no_grad()
     def predict_step(self, batch, batch_idx, phase='predict'):
         x, y, metadata = batch
         y_hat = self.model(x)
