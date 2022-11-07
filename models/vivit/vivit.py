@@ -249,9 +249,11 @@ class ViViT(nn.Module):
 
         self.dropout = nn.Dropout(emb_dropout)
 
-        self.mlp_head = nn.Sequential(
-            nn.LayerNorm(dim),
-            nn.Linear(dim, num_classes),
+        self.magnifier = nn.Linear(self.dim, (self.int_image_size // self.patch_size)**2)
+        
+        self.conv_head = nn.Sequential(
+            nn.LayerNorm((self.int_image_size, self.int_image_size)),
+            nn.Conv2d(4, self.num_predictions, 1),
             nn.Sigmoid()
         )
 
@@ -269,17 +271,22 @@ class ViViT(nn.Module):
 
         x = rearrange(x, 'b t n d -> (b t) n d')
         x = self.space_transformer(x)
-        x = rearrange(x[:, 0], '(b t) ... -> b t ...', b=b)
+        # x = rearrange(x[:, 0], '(b t) ... -> b t ...', b=b)  # Originally in VIVIT (taking class token only)
+        x = rearrange(x, '(b t) ... -> b t ...', b=b)  # Alternative: Keeping all tokens
 
-        cls_temporal_tokens = repeat(self.temporal_token, '() n d -> b n d', b=b)
-        x = torch.cat((cls_temporal_tokens, x), dim=1)
-
-        x = self.temporal_transformer(x)
+        # TODO: Handle temporal transformer keeping all tokens
+        # cls_temporal_tokens = repeat(self.temporal_token, '() n d -> b n d', b=b)
+        # x = torch.cat((cls_temporal_tokens, x), dim=1)
+        # x = self.temporal_transformer(x)
         
+        x = x[:, :, 1:, :]  # Removing class token
+        x = self.magnifier(x)
+        x = rearrange(x, 'b t (h w) (p1 p2) -> b t (h p1) (w p2)', h=int(self.int_image_size**0.5), p1=self.patch_size)
 
-        x = x.mean(dim = 1) if self.pool == 'mean' else x[:, 0]
-
-        return self.mlp_head(x).reshape(-1, self.num_predictions, 1, self.image_size, self.image_size)
+        x = torch.stack([self.conv_head(element) for element in x]).unsqueeze(1)
+        out_shape = (self.num_predictions, self.image_size, self.image_size)
+        out = torch.nn.functional.interpolate(x, size=out_shape, mode="nearest")
+        return out
 
 if __name__ == "__main__":
     device = torch.device("cuda")
