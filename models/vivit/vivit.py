@@ -283,8 +283,8 @@ class ViViT(nn.Module):
         x = self.magnifier(x)
         x = rearrange(x, 'b t (h w) (p1 p2) -> b t (h p1) (w p2)', h=int(self.int_image_size**0.5), p1=self.patch_size)
 
-        x = torch.stack([self.conv_head(element) for element in x]).unsqueeze(1)
-        out_shape = (self.num_predictions, self.image_size, self.image_size)
+        x = torch.stack([self.conv_head(element) for element in x]).unsqueeze(2)
+        out_shape = (1, self.image_size, self.image_size)
         out = torch.nn.functional.interpolate(x, size=out_shape, mode="nearest")
         return out
 
@@ -297,4 +297,4 @@ if __name__ == "__main__":
         x = torch.randn(B, T, C, H, W).to(device)
         out_shape = model(x).shape
         print(out_shape)
-        assert out_shape == (B, 1, 32, H, W)
+        assert out_shape == (B, 32, 1, H, W)

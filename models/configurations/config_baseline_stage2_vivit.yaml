@@ -109,7 +109,7 @@ dataset:
       standardise: True
     
 train:    # model training settings
-  batch_size: 8  # 16
+  batch_size: 4  # 16
   max_epochs: 90
   n_workers: 32  # 8
   loss: BCEWithLogitsLoss # requires pos_weight to be set
