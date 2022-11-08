@@ -7,15 +7,14 @@ experiment:  # Settings for the current experiment
 dataset: 
   # Available bands: 'IR_016', 'IR_039', 'IR_087', 'IR_097', 'IR_108', 'IR_120', 'IR_134', 'VIS006', 'VIS008', 'WV_062', 'WV_073'
   sat_bands: ['IR_016', 'IR_039', 'IR_087', 'IR_097', 'IR_108', 'IR_120', 'IR_134', 'VIS006', 'VIS008', 'WV_062', 'WV_073']
-#   regions: [ 'boxi_0015', 'boxi_0034', 'boxi_0076' ]  # stage-1
-  regions: [ 'boxi_0015', 'boxi_0034', 'boxi_0076',
-             'roxi_0004', 'roxi_0005', 'roxi_0006', 'roxi_0007' ]  # stage-2
+  # regions: [ 'boxi_0015']  # stage-1
+  regions: [ 'boxi_0015', 'boxi_0034', 'boxi_0076', 'roxi_0004', 'roxi_0005', 'roxi_0006', 'roxi_0007' ]  # stage-2
   # or, e.g., ['boxi_0015'] if you want to train your model for one region only
   input_product: REFL-BT 
   output_product: RATE 
   out_channels: 1 
   in_channels: 11
-  swap_time_ch: False #swap the time and channels axis - if set to False (B, T, C, H, W)
+  swap_time_ch: True #swap the time and channels axis - if set to False (B, T, C, H, W)
   full_opera_context: 1512 # (105+42+105)*6; 
   size_target_center:  252 # 42*6;  
   len_seq_in: 4        # number of input slots per training sequence

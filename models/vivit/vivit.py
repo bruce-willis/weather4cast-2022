@@ -259,6 +259,9 @@ class ViViT(nn.Module):
 
     def forward(self, x):
         # Interpolating frames to be of prefferred shape (256 x 256)
+        # BCTHW -> BTCHW
+        x = x.permute(0, 2, 1, 3, 4)
+        
         in_shape = (self.in_channels, self.int_image_size, self.int_image_size)
         x = torch.nn.functional.interpolate(x, size=in_shape, mode="nearest")
         x = self.to_patch_embedding(x)
@@ -283,9 +286,11 @@ class ViViT(nn.Module):
         x = self.magnifier(x)
         x = rearrange(x, 'b t (h w) (p1 p2) -> b t (h p1) (w p2)', h=int(self.int_image_size**0.5), p1=self.patch_size)
 
-        x = torch.stack([self.conv_head(element) for element in x]).unsqueeze(2)
+        x = self.conv_head(x).unsqueeze(2)
         out_shape = (1, self.image_size, self.image_size)
         out = torch.nn.functional.interpolate(x, size=out_shape, mode="nearest")
+        
+        out = out.permute(0, 2, 1, 3, 4)
         return out
 
 if __name__ == "__main__":
@@ -297,11 +302,11 @@ if __name__ == "__main__":
         model = ViViT().to(device)
         
         
-        B, T, C, H, W = 2, 4, 11, 252, 252
-        x = torch.randn(B, T, C, H, W).to(device)
+        B, C, T, H, W = 2, 11, 4, 252, 252
+        x = torch.randn(B, C, T, H, W).to(device)
         
         summary(model, x, print_summary=True)
         
         out_shape = model(x).shape
         print(out_shape)
-        assert out_shape == (B, 32, 1, H, W)
+        assert out_shape == (B, 1, 32, H, W)
