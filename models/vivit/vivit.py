@@ -244,8 +244,8 @@ class ViViT(nn.Module):
         self.space_token = nn.Parameter(torch.randn(1, 1, dim))
         self.space_transformer = Transformer(dim, depth, heads, self.dim_head, dim*scale_dim, dropout)
 
-        self.temporal_token = nn.Parameter(torch.randn(1, 1, dim))
-        self.temporal_transformer = Transformer(dim, depth, heads, self.dim_head, dim*scale_dim, dropout)
+        #self.temporal_token = nn.Parameter(torch.randn(1, 1, dim))
+        #self.temporal_transformer = Transformer(dim, depth, heads, self.dim_head, dim*scale_dim, dropout)
 
         self.dropout = nn.Dropout(emb_dropout)
 
@@ -289,12 +289,19 @@ class ViViT(nn.Module):
         return out
 
 if __name__ == "__main__":
-    device = torch.device("cuda")
+    from pytorch_model_summary import summary
+    
+    device = torch.device("cuda:7")
     
     with torch.no_grad():
         model = ViViT().to(device)
+        
+        
         B, T, C, H, W = 2, 4, 11, 252, 252
         x = torch.randn(B, T, C, H, W).to(device)
+        
+        summary(model, x, print_summary=True)
+        
         out_shape = model(x).shape
         print(out_shape)
         assert out_shape == (B, 32, 1, H, W)

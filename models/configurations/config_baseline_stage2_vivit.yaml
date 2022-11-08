@@ -21,7 +21,7 @@ dataset:
   len_seq_in: 4        # number of input slots per training sequence
   len_seq_predict: 32  # output slots; both still hard-coded in places!
 #   data_root:  'data/2019'  # stage-1
-  data_root:  'data/w4c22'
+  data_root:  '/wyner/data/belousov/weather4cast'
   years:  [ '2019', '2020' ]  # stage-2
 #   years:  [ '2019' ]  # stage-1
 #   splits_path: 'data/timestamps_and_splits_2019.csv'  # stage-1
@@ -109,7 +109,7 @@ dataset:
       standardise: True
     
 train:    # model training settings
-  batch_size: 4  # 16
+  batch_size: 32  # 16
   max_epochs: 90
   n_workers: 32  # 8
   loss: BCEWithLogitsLoss # requires pos_weight to be set
