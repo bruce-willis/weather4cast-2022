@@ -26,6 +26,7 @@ import argparse
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.plugins import DDPPlugin
+from pytorch_lightning.plugins.environments import SLURMEnvironment
 from torch.utils.data import DataLoader
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
@@ -125,11 +126,18 @@ def get_trainer(gpus,params):
         callback_funcs = [checkpoint_callback, early_stop_callback]
     else: 
         callback_funcs = [checkpoint_callback]
+    
+    if 'SLURM_JOB_ID' in os.environ and False:
+        print("SLURM JOB ID detected, using SLURMEnvironment")
+        plugins = [SLURMEnvironment(auto_requeue=False)]
+    else:
+        plugins = None
 
     trainer = pl.Trainer(devices=gpus, max_epochs=max_epochs,
                          gradient_clip_val=params['model']['gradient_clip_val'],
                          gradient_clip_algorithm=params['model']['gradient_clip_algorithm'],
                          accelerator="gpu",
+                         plugins=plugins,
                          callbacks=callback_funcs,logger=tb_logger,
                          profiler='simple',precision=params['experiment']['precision'],
                          strategy="ddp_find_unused_parameters_false", # ddp
