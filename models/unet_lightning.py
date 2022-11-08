@@ -47,7 +47,7 @@ class UNet_Lightning(pl.LightningModule):
             from models.UNET3D_SWIN import SwinWeather
             self.model = SwinWeather(**UNet_params)
         else:
-            self.model = Base_UNET3D(in_channels=self.in_channels, start_filts =  self.start_filts, dropout_rate = self.dropout_rate)
+            self.model = Base_UNET3D(in_channels=self.in_channels, start_filts =  self.start_filts, dropout_rate = self.dropout_rate, **UNet_params)
 
         self.save_hyperparameters()
         self.params = params
