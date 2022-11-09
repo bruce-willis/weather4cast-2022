@@ -253,8 +253,7 @@ class ViViT(nn.Module):
         
         self.conv_head = nn.Sequential(
             nn.LayerNorm((self.int_image_size, self.int_image_size)),
-            nn.Conv2d(4, self.num_predictions, 1),
-            nn.Sigmoid()
+            nn.Conv2d(4, self.num_predictions, 1)
         )
 
     def forward(self, x):
