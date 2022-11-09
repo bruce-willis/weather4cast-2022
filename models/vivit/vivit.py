@@ -260,7 +260,7 @@ class ViViT(nn.Module):
     def forward(self, x):
         # Interpolating frames to be of prefferred shape (256 x 256)
         # BCTHW -> BTCHW
-        x = x.permute(0, 2, 1, 3, 4)
+        x = x.transpose(1, 2)
         
         in_shape = (self.in_channels, self.int_image_size, self.int_image_size)
         x = torch.nn.functional.interpolate(x, size=in_shape, mode="nearest")
@@ -288,9 +288,9 @@ class ViViT(nn.Module):
 
         x = self.conv_head(x).unsqueeze(2)
         out_shape = (1, self.image_size, self.image_size)
-        out = torch.nn.functional.interpolate(x, size=out_shape, mode="nearest")
+        out = torch.nn.functional.interpolate(x, size=out_shape, mode="trilinear")
         
-        out = out.permute(0, 2, 1, 3, 4)
+        out = out.transpose(1, 2)
         return out
 
 if __name__ == "__main__":
