@@ -75,4 +75,4 @@
 
 # Vivit
 ### vivit_bceLoss_8_8_768
-* Epoch 2: TBD
+* Epoch 2: 0.1932861 (https://pastebin.com/m1VFzEqC)
