@@ -74,4 +74,5 @@
 
 
 # Vivit
-### ??? 
+### vivit_bceLoss_8_8_768
+* Epoch 2: TBD
