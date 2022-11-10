@@ -380,7 +380,7 @@ class UpConv(nn.Module):
         self.norm2 = get_normalization(normalization, self.out_channels, dim=dim)
         if attention:
             self.attention = GridAttention(
-                in_channels=in_channels // 2, gating_channels=in_channels, dim=dim
+                in_channels=in_channels // 2, gating_channels=in_channels, sub_sample_factor=1 if in_channels > 128 else 2, dim=dim
             )
         else:
             self.attention = DummyAttention()
@@ -774,6 +774,7 @@ class UNet(nn.Module):
             full_norm: bool = True,
             dim: int = 3,
             conv_mode: str = 'same',
+             **kwargs
     ):
         super().__init__()
 
@@ -1038,8 +1039,15 @@ if __name__ == '__main__':
     # m = UNet3dLite()
     # x = torch.randn(1, 1, 22, 140, 140)
     # m(x)
-    test_2d_config()
-    print()
-    test_planar_configs()
-    print('All tests sucessful!')
+    # test_2d_config()
+    # print()
+    # test_planar_configs()
+    # print('All tests sucessful!')
     # # TODO: Also test valid convolution architecture.
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    model = UNet(attention=True).to(device)
+    B, C, T, H, W = 2, 11, 4, 252, 252
+    weather_input = torch.rand(B, C, T, H, W, device=device)
+    with torch.no_grad():
+        weather_output = model(weather_input)
+    assert weather_output.shape == (B, 1, 32, H, W)
