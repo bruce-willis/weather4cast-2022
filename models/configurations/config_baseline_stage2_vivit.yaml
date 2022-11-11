@@ -129,7 +129,7 @@ model:    # model definition settings
   patch_size: 16
   num_predictions: 32
   num_frames: 4
-  dim: 192
+  dim: 400
   depth: 8
   heads: 8
   pool: cls
