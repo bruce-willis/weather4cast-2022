@@ -126,6 +126,10 @@ train:    # model training settings
 
 model:    # model definition settings
   model_name: 3D_UNET_base
+  attention: True
+  activation: rrelu
+  normalization: instance
+  # up_mode: resizeconv_linear
   gradient_clip_val: 2.0
   gradient_clip_algorithm: value
 
