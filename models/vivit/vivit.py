@@ -204,7 +204,7 @@ class Transformer(nn.Module):
 
   
 class ViViT(nn.Module):
-    def __init__(self, image_size=252, int_image_size=256, patch_size=16, num_predictions=32, num_frames=4, dim = 192, depth = 8, heads = 8, pool = 'cls', in_channels = 11, dropout = 0.,
+    def __init__(self, image_size=252, int_image_size=256, patch_size=16, num_predictions=32, num_frames=4, dim = 16**2, depth = 8, heads = 8, pool = 'cls', in_channels = 11, dropout = 0.,
                  emb_dropout = 0., scale_dim = 4, **kwargs):
         super().__init__()
         
@@ -244,22 +244,17 @@ class ViViT(nn.Module):
         self.space_token = nn.Parameter(torch.randn(1, 1, dim))
         self.space_transformer = Transformer(dim, depth, heads, self.dim_head, dim*scale_dim, dropout)
 
-        #self.temporal_token = nn.Parameter(torch.randn(1, 1, dim))
-        #self.temporal_transformer = Transformer(dim, depth, heads, self.dim_head, dim*scale_dim, dropout)
-
-        self.dropout = nn.Dropout(emb_dropout)
-
-        self.magnifier = nn.Linear(self.dim, (self.int_image_size // self.patch_size)**2)
+        self.temporal_token = nn.Parameter(torch.randn(1, 1, dim))
+        self.temporal_transformer = Transformer(dim, depth, heads, self.dim_head, dim*scale_dim, dropout)
         
-        self.conv_head = nn.Sequential(
-            nn.LayerNorm((self.int_image_size, self.int_image_size)),
-            nn.Conv2d(4, self.num_predictions, 1)
-        )
+        self.time_pred = nn.Linear(dim, self.num_predictions * dim)
+        self.dropout = nn.Dropout(emb_dropout)
+        self.out_conv = nn.Conv2d(self.num_predictions, self.num_predictions, 3, 1, 1)
 
     def forward(self, x):
         # Interpolating frames to be of prefferred shape (256 x 256)
         # BCTHW -> BTCHW
-        x = x.transpose(1, 2)
+        # x = x.transpose(1, 2)
         
         in_shape = (self.in_channels, self.int_image_size, self.int_image_size)
         x = torch.nn.functional.interpolate(x, size=in_shape, mode="nearest")
@@ -273,39 +268,41 @@ class ViViT(nn.Module):
 
         x = rearrange(x, 'b t n d -> (b t) n d')
         x = self.space_transformer(x)
-        # x = rearrange(x[:, 0], '(b t) ... -> b t ...', b=b)  # Originally in VIVIT (taking class token only)
-        x = rearrange(x, '(b t) ... -> b t ...', b=b)  # Alternative: Keeping all tokens
+        x = rearrange(x[:, 0], '(b t) ... -> b t ...', b=b)  # Originally in VIVIT (taking class token only)
+        # x = rearrange(x, '(b t) ... -> b t ...', b=b)  # Alternative: Keeping all tokens
 
-        # TODO: Handle temporal transformer keeping all tokens
-        # cls_temporal_tokens = repeat(self.temporal_token, '() n d -> b n d', b=b)
-        # x = torch.cat((cls_temporal_tokens, x), dim=1)
-        # x = self.temporal_transformer(x)
+        cls_temporal_tokens = repeat(self.temporal_token, '() n d -> b n d', b=b)
+        x = torch.cat((cls_temporal_tokens, x), dim=1)
+        x = self.temporal_transformer(x)
         
-        x = x[:, :, 1:, :]  # Removing class token
-        x = self.magnifier(x)
-        x = rearrange(x, 'b t (h w) (p1 p2) -> b t (h p1) (w p2)', h=int(self.int_image_size**0.5), p1=self.patch_size)
-
-        x = self.conv_head(x).unsqueeze(2)
-        out_shape = (1, self.image_size, self.image_size)
-        out = torch.nn.functional.interpolate(x, size=out_shape, mode="trilinear")
+        x = x[:, 0, :]  # Extracting class token
+        x = rearrange(self.time_pred(x), "b (t d) -> b t d", t=self.num_predictions)
+        x = rearrange(x, "b t (h w) -> b t h w", h=int(x.shape[-1]**0.5))
         
-        out = out.transpose(1, 2)
+        out_shape = (self.image_size, self.image_size)
+        x = torch.nn.functional.interpolate(x, size=out_shape, mode="nearest")
+        
+        out = self.out_conv(x).unsqueeze(2)
+        
+        # BTCHW -> BCTHW
+        # out = out.transpose(1, 2)
         return out
 
 if __name__ == "__main__":
     from pytorch_model_summary import summary
     
-    device = torch.device("cuda:7")
+    # device = torch.device("cuda:7")
+    device = torch.device("cuda")
     
     with torch.no_grad():
         model = ViViT().to(device)
         
         
-        B, C, T, H, W = 2, 11, 4, 252, 252
-        x = torch.randn(B, C, T, H, W).to(device)
+        B, T, C, H, W = 2, 4, 11, 252, 252
+        x = torch.randn(B, T, C, H, W).to(device)
         
         summary(model, x, print_summary=True)
         
         out_shape = model(x).shape
         print(out_shape)
-        assert out_shape == (B, 1, 32, H, W)
+        assert out_shape == (B, 32, 1, H, W)
