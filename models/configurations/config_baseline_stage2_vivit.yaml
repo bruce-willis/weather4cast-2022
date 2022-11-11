@@ -137,6 +137,7 @@ model:    # model definition settings
   dropout: 0.0
   emb_dropout: 0.0
   scale_dim: 4
+  use_deltas: False
   use_checkpoint: False
   gradient_clip_val: 2.0
   gradient_clip_algorithm: value

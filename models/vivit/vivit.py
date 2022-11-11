@@ -205,7 +205,7 @@ class Transformer(nn.Module):
   
 class ViViT(nn.Module):
     def __init__(self, image_size=252, int_image_size=256, patch_size=16, num_predictions=32, num_frames=4, dim = 16**2, depth = 8, heads = 8, pool = 'cls', in_channels = 11, dropout = 0.,
-                 emb_dropout = 0., scale_dim = 4, **kwargs):
+                 emb_dropout = 0., scale_dim = 4, use_deltas=False, **kwargs):
         super().__init__()
         
         assert pool in {'cls', 'mean'}, 'pool type must be either cls (cls token) or mean (mean pooling)'
@@ -230,6 +230,7 @@ class ViViT(nn.Module):
         self.dropout = dropout
         self.emb_dropout = emb_dropout
         self.scale_dim = scale_dim
+        self.use_deltas = use_deltas
         
         num_classes = self.num_predictions * image_size **2
         
@@ -253,9 +254,6 @@ class ViViT(nn.Module):
 
     def forward(self, x):
         # Interpolating frames to be of prefferred shape (256 x 256)
-        # BCTHW -> BTCHW
-        # x = x.transpose(1, 2)
-        
         in_shape = (self.in_channels, self.int_image_size, self.int_image_size)
         x = torch.nn.functional.interpolate(x, size=in_shape, mode="nearest")
         x = self.to_patch_embedding(x)
@@ -284,8 +282,10 @@ class ViViT(nn.Module):
         
         out = self.out_conv(x).unsqueeze(2)
         
-        # BTCHW -> BCTHW
-        # out = out.transpose(1, 2)
+        if self.use_deltas:
+            for c in range(1, self.num_predictions):
+                out[:, :, c, :, :] += out[:, :, c-1, :, :]
+            
         return out
 
 if __name__ == "__main__":
