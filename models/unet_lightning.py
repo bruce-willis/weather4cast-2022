@@ -240,6 +240,10 @@ class UNet_Lightning(pl.LightningModule):
 
     def configure_optimizers(self):
         if VERBOSE: print("Learning rate:",self.params["lr"], "| Weight decay:",self.params["weight_decay"])
+        if self.params.get('optimizer', '') == 'adabelief':
+            from adabelief_pytorch import AdaBelief
+            print("Using AdaBelief optimizer")
+            return AdaBelief(self.parameters())
         optimizer = torch.optim.AdamW(self.parameters(),
                                      lr=float(self.params["lr"]),weight_decay=float(self.params["weight_decay"])) 
         return optimizer
