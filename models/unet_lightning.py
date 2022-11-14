@@ -51,6 +51,7 @@ class UNet_Lightning(pl.LightningModule):
 
         self.save_hyperparameters()
         self.params = params
+        self.rain_threshold = params.get('rain_threshold', 0.5)
         #self.example_input_array = np.zeros((44,252,252))
         
         self.val_batch = 0
@@ -232,8 +233,11 @@ class UNet_Lightning(pl.LightningModule):
             print('y_hat', y_hat.shape, 'y', y.shape, '----------------- model')
         if self.loss == "BCEWithLogitsLoss" or self.loss == "mIoULoss":
             print("applying thresholds to y_hat logits")
-            # set the logits threshold equivalent to sigmoid(x)>=0.5
-            idx_gt0 = y_hat>=0
+            if self.rain_threshold == 0.5:
+                # set the logits threshold equivalent to sigmoid(x)>=0.5
+                idx_gt0 = y_hat>=0
+            else:
+                idx_gt0 = torch.sigmoid(y_hat) >= self.rain_threshold
             y_hat[idx_gt0] = 1
             y_hat[~idx_gt0] = 0
         return y_hat
