@@ -1,3 +1,27 @@
+# Team "team-name" solution for Weather4cast Challenge
+
+This is the code for our solution to the [NeurIPS 2022 Weather4cast Challenge](https://www.iarai.ac.at/weather4cast/).
+
+Our solution is described in TBD.
+
+## How to run
+TBD
+
+## Final Results
+Our approach scored 0.2997844 in the heldout core leaderboard and ranked 4th overall.
+
+## Team Members
+* Yury Belousov 
+* Sergey Polezhaev
+* Brian Pulfer
+
+## Citing us
+TBD
+
+
+<details>
+  <summary>Original competition's readme</summary>
+
 ![Title](/images/weather4cast_v1000-26.png?raw=true "Weather4cast competition")
 
 # [Weather4cast](https://www.iarai.ac.at/weather4cast/)  - Super-Resolution Rain Movie Prediction under Spatio-Temporal Shifts
@@ -251,3 +275,5 @@ The competition is organized / supported by:
 - [Silesian University of Technology, Poland](https://polsl.pl)
 - [European Space Agency Φ-lab, Italy](https://philab.phi.esa.int/)
 - [Spanish State Meteorological Agency, AEMET, Spain](http://aemet.es/)
+
+</details>
