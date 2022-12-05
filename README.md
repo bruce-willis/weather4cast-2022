@@ -18,6 +18,9 @@ Our approach scored 0.2997844 in the heldout core leaderboard and ranked 4th ove
 ## Citing us
 TBD
 
+## License
+Our solution is released under [Apache License 2.0](./LICENSE) except for the baseline, which is released under [GPL-3.0 License](./LICENSE.baseline).
+
 
 <details>
   <summary>Original competition's readme</summary>
