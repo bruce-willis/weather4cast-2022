@@ -8,7 +8,7 @@ import h5py
 import numpy as np
 from tqdm.autonotebook import tqdm
 
-sumbissions_path = Path('submissions/archive/test/majority_vote')  # or 'submission/archive/heldout/majority_vote'
+sumbissions_path = Path('submissions/archive/heldout/majority_vote')  # or 'submission/archive/heldout/majority_vote'
 majority_vote_path = sumbissions_path / 'unzipped'
 majority_vote_submission_path = sumbissions_path / 'majority_vote_submission'
 

@@ -152,5 +152,4 @@ dmypy.json
 .vscode/
 
 # solution
-submission/archive/*
-!submission/archive/readme.md
+submissions/archive/
