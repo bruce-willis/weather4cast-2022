@@ -2,13 +2,38 @@
 
 This is the code for our solution to the [NeurIPS 2022 Weather4cast Challenge](https://www.iarai.ac.at/weather4cast/).
 
-Our solution is described in TBD.
+## Overview
+We first introduce a set of configurations that can be applied and enhance results for almost any model as well as baseline-specific improvements. We then propose two approaches based on Vision Transformers: the interpretation of the input as a video or as a 3D medical image and the use of problem-specific VIVIT or SWIN-UNETR Transformer respectively. As in previous years, we report that ensembling different trained models yield the most competitive results. Our selected algorithm has placed ex-aequo 3rd in the competition finals, which suggests that the use of transformers for weather prediction is a promising research direction that needs more investigation. 
+
+For more details, please refer to our [paper]().
 
 ## How to run
-TBD
+1. Create python environment and install the requirements: `pip install -r requirements.txt`
+2. Download the models' weights from [google drive](https://drive.google.com/file/d/1oI6rdSwo1M5NBZtUV0KUAYgHzw4I6bAq/) and unzip them: `gdown 1oI6rdSwo1M5NBZtUV0KUAYgHzw4I6bAq && unzip weights.zip`
+3. Run the inference script (you may need to edit the path to the data): `bash mk_heldout_core.sh config_swin_stage2-pred.yaml weights/swin_bce_epoch_3.ckpt submission_swin_epoch_3.core`
+4. *(Optional)* To generate a majority voting submission:  
+    a. Run the same scripts for other models:
+    ```bash
+    bash mk_heldout_core.sh config_swin_stage2-pred.yaml weights/swin_bce_adabelief_epoch_4.ckpt submission_swin_adabelief_epoch_4.core
+
+    bash mk_heldout_core.sh config_swin_channel_conv_stage2-pred.yaml weights/swin_bce_channel_conv_adabelief_epoch_3.ckpt submission_swin_channel_conv_adabelief_epoch_3.core
+
+    bash mk_heldout_core.sh config_swin_channel_conv_stage2-pred.yaml weights/swin_bce_channel_conv_adabelief_epoch_4.ckpt submission_swin_channel_conv_adabelief_epoch_4.core
+
+    bash mk_heldout_core.sh config_baseline_improved_stage2-pred.yaml weights/baseline_improved_bce_epoch_15.ckpt submission_baseline_improved_epoch_15.core
+    ```
+    b. Move all generated submissions to the `submissions` folder: 
+    ```bash
+    mkdir -p submissions/archive/heldout/majority_vote
+    mv submission*.zip submissions/archive/heldout/majority_vote/
+    ```
+    c. Run the script to generate a majority voting submission: `python submissions/create_majority_vote.py`
 
 ## Final Results
-Our approach scored 0.2997844 in the heldout core leaderboard and ranked 4th overall.
+Our approach scored 0.2997844 in the heldout core leaderboard and ranked ex-aequo 3rd overall!
+
+![winners](images/winners.png)
+
 
 ## Team Members
 * Yury Belousov 
