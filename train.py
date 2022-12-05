@@ -86,13 +86,13 @@ class DataModule(pl.LightningDataModule):
 
 def load_model(Model, params, checkpoint_path=''):
     """ loads a model from a checkpoint or from scratch if checkpoint_path='' """
-    p = {**params['experiment'], **params['dataset'], **params['train']} 
+    p = {**params['experiment'], **params['dataset'], **params['train'], 'predict': params['predict']} 
     if checkpoint_path == '':
         print('-> Modelling from scratch!  (no checkpoint loaded)')
         model = Model(params['model'], p)            
     else:
         print(f'-> Loading model checkpoint: {checkpoint_path}')
-        model = Model.load_from_checkpoint(checkpoint_path, UNet_params=params['model'], params=p, strict=False)
+        model = Model.load_from_checkpoint(checkpoint_path, UNet_params=params['model'], params=p, strict=True)
     return model
 
 def get_trainer(gpus,params):
