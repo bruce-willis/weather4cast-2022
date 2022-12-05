@@ -1,7 +1,7 @@
 experiment:  # Settings for the current experiment
   name: 'U-NET-252'  # name of the current experiment for logging
   experiment_folder: 'lightning_logs/'  # folder to save logs 
-  sub_folder: 'swin-submission'  # logging sub-folder
+  sub_folder: 'baseline'  # logging sub-folder
   precision: 32  # bit precision of weights. 32 or 16 
   logging: True  # Toggle logging on/off
 dataset: 
@@ -105,7 +105,7 @@ dataset:
       standardise: True
     
 train:    # model training settings
-  batch_size: 2 # 40
+  batch_size: 12 # 40
   max_epochs: 90
   n_workers: 8  # 16
   loss: BCEWithLogitsLoss # requires pos_weight to be set
@@ -119,16 +119,11 @@ train:    # model training settings
   dropout_rate: 0.4
 
 model:    # model definition settings
-  model_name: 3D_UNET_SWIN
-  in_channels: 11  
-  out_channels: 1
-  swin_input_shape: [32, 256, 256] # (t, h, w)
-  # channel_conv_params:
-  #   dropout_rate: 0. # 0.5
-  #   pooling: False
-  #   normalization: instance
-  #   activation: rrelu
-  # interpolate_mode: trilinear
+  model_name: 3D_UNET_base
+  attention: True
+  activation: rrelu
+  normalization: instance
+  # up_mode: resizeconv_linear  # uncomment if model trained wuthout convtranspose (upsample + regular conv instead)
   gradient_clip_val: 2.0
   gradient_clip_algorithm: value
 

@@ -1,7 +1,7 @@
 experiment:  # Settings for the current experiment
   name: 'U-NET-252'  # name of the current experiment for logging
   experiment_folder: 'lightning_logs/'  # folder to save logs 
-  sub_folder: 'baseline'  # logging sub-folder
+  sub_folder: 'swin'  # logging sub-folder
   precision: 32  # bit precision of weights. 32 or 16 
   logging: True  # Toggle logging on/off
 dataset: 
@@ -26,6 +26,7 @@ dataset:
 #   years:  [ '2019' ]  # stage-1
 #   splits_path: 'data/timestamps_and_splits_2019.csv'  # stage-1
   splits_path: 'data/timestamps_and_splits_stage2.csv'  # stage-2
+  add_val_to_train: True
   
   preprocess_OPERA:
     #  # var mean sd min median max length pos.weight.thr_0 
@@ -118,22 +119,24 @@ train:    # model training settings
   # pos_weight: 1.0
   early_stopping: True
   patience: 20
+  optimizer: adabelief
   lr: 1e-4
   weight_decay: 2e-2 
   init_filter_size: 32
   dropout_rate: 0.4
+  restore_full_training: False
 
 model:    # model definition settings
   model_name: 3D_UNET_SWIN
   in_channels: 11  
   out_channels: 1
   swin_input_shape: [32, 256, 256] # (t, h, w)
-  channel_conv_params:
-    dropout_rate: 0.5
-    pooling: False
-    normalization: instance
-    activation: rrelu
-  interpolate_mode: trilinear
+  # channel_conv_params:
+  #   dropout_rate: 0.
+  #   pooling: False
+  #   normalization: instance
+  #   activation: rrelu
+  # interpolate_mode: trilinear
   use_checkpoint: False
   gradient_clip_val: 2.0
   gradient_clip_algorithm: value

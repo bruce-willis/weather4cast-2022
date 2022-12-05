@@ -57,7 +57,7 @@ class UNet_Lightning(pl.LightningModule):
 
         self.save_hyperparameters()
         self.params = params
-        self.rain_threshold = params.get('rain_threshold', 0.5)
+        self.rain_threshold = params.get('predict', {}).get('threshold', 0.5)
         #self.example_input_array = np.zeros((44,252,252))
         
         self.val_batch = 0
