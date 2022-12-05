@@ -29,6 +29,9 @@ import torch.nn.functional as F
 from utils.evaluate import *
 import numpy as np;
 
+# losses
+from monai.losses import TverskyLoss, DiceFocalLoss
+
 #models
 from models.baseline_UNET3D import UNet as Base_UNET3D # 3_3_2 model selection
 
@@ -70,7 +73,9 @@ class UNet_Lightning(pl.LightningModule):
             'smoothL1': nn.SmoothL1Loss(), 'L1': nn.L1Loss(), 'mse': F.mse_loss,
             'BCELoss': nn.BCELoss(), 
             'BCEWithLogitsLoss': nn.BCEWithLogitsLoss(pos_weight=pos_weight), 'CrossEntropy': nn.CrossEntropyLoss(), 'DiceBCE': DiceBCELoss(), 'DiceLoss': DiceLoss(),
-            'mIoULoss': mIoU()
+            'mIoULoss': mIoU(),
+            'tversky': TverskyLoss(alpha=0.7, beta=0.3),
+            'dice_focal': DiceFocalLoss(sigmoid=True, focal_weight=torch.tensor([pos_weight]))
             }[self.loss]
         self.main_metric = {
             'smoothL1':          'Smooth L1',
@@ -81,7 +86,9 @@ class UNet_Lightning(pl.LightningModule):
             'CrossEntropy':      'cross-entropy',
             'DiceBCE':           'Dice BCE',
             'DiceLoss':          'Dice loss',
-            'mIoULoss':          'Modified IoU'
+            'mIoULoss':          'Modified IoU',
+            'tversky':           'Tversky loss',
+            'dice_focal':        'DiceFocal loss'
             }[self.loss]
 
         self.relu = nn.ReLU() # None
@@ -156,7 +163,7 @@ class UNet_Lightning(pl.LightningModule):
 
         # todo: add the same plot as in `test_step`
 
-        if self.loss == "BCEWithLogitsLoss" or self.loss == "mIoULoss":
+        if self.loss in {"BCEWithLogitsLoss", "mIoULoss", "dice_focal"}:
             print("applying thresholds to y_hat logits")
             # set the logits threshold equivalent to sigmoid(x)>=0.5
             idx_gt0 = y_hat>=0
@@ -206,7 +213,7 @@ class UNet_Lightning(pl.LightningModule):
             print('y_hat', y_hat.shape, 'y', y.shape, '----------------- model')
         loss = self._compute_loss(y_hat, y, mask=mask)
         ## todo: add the same plot as in `test_step`
-        if self.loss == "BCEWithLogitsLoss" or self.loss == "mIoULoss":
+        if self.loss in {"BCEWithLogitsLoss", "mIoULoss", "dice_focal"}:
             print("applying thresholds to y_hat logits")
             # set the logits threshold equivalent to sigmoid(x)>=0.5
             idx_gt0 = y_hat>=0
@@ -234,7 +241,7 @@ class UNet_Lightning(pl.LightningModule):
         mask = self.get_target_mask(metadata)
         if VERBOSE:
             print('y_hat', y_hat.shape, 'y', y.shape, '----------------- model')
-        if self.loss == "BCEWithLogitsLoss" or self.loss == "mIoULoss":
+        if self.loss in {"BCEWithLogitsLoss", "mIoULoss", "dice_focal"}:
             print("applying thresholds to y_hat logits")
             if self.rain_threshold == 0.5:
                 # set the logits threshold equivalent to sigmoid(x)>=0.5
