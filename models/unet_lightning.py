@@ -241,6 +241,21 @@ class UNet_Lightning(pl.LightningModule):
         mask = self.get_target_mask(metadata)
         if VERBOSE:
             print('y_hat', y_hat.shape, 'y', y.shape, '----------------- model')
+        if 'predict' in self.params and 'mask_filename' in self.params['predict']:
+            y_hat = torch.sigmoid(y_hat)
+            import joblib
+            mask = joblib.load(self.params['predict']['mask_filename'])
+            region, year = self.params['predict']['region_to_predict'], self.params['predict']['year_to_predict']
+            print(f'mask from {self.params["predict"]["mask_filename"]} for region {region} and year {year}')
+            train_mask, val_mask = mask[region][year]['train'], mask[region][year]['val']
+            diff = train_mask - val_mask
+            alpha = 1 / (1 + diff)
+            alpha = torch.as_tensor(alpha, dtype=torch.float32, device=self.device)
+            y_hat *= alpha
+            idx_gt0 = y_hat >= self.rain_threshold
+            y_hat[idx_gt0] = 1
+            y_hat[~idx_gt0] = 0
+            return y_hat
         if self.loss in {"BCEWithLogitsLoss", "mIoULoss", "dice_focal"}:
             print("applying thresholds to y_hat logits")
             if self.rain_threshold == 0.5:
