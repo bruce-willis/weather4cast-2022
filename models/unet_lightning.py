@@ -50,7 +50,7 @@ class UNet_Lightning(pl.LightningModule):
             from models.UNET3D_SWIN import SwinWeather
             self.model = SwinWeather(**UNet_params)
         elif UNet_params['model_name'] == 'VIVIT':
-            from models.vivit.vivit import ViViT
+            from models.vivit import ViViT
             self.model = ViViT(**UNet_params)
         else:
             self.model = Base_UNET3D(in_channels=self.in_channels, start_filts =  self.start_filts, dropout_rate = self.dropout_rate, **UNet_params)
@@ -257,7 +257,7 @@ class UNet_Lightning(pl.LightningModule):
             y_hat[~idx_gt0] = 0
             return y_hat
         if self.loss in {"BCEWithLogitsLoss", "mIoULoss", "dice_focal"}:
-            print("applying thresholds to y_hat logits")
+            print(f"applying thresholds {self.rain_threshold} to y_hat logits")
             if self.rain_threshold == 0.5:
                 # set the logits threshold equivalent to sigmoid(x)>=0.5
                 idx_gt0 = y_hat>=0
