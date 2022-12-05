@@ -1,7 +1,7 @@
 experiment:  # Settings for the current experiment
   name: 'U-NET-252'  # name of the current experiment for logging
   experiment_folder: 'lightning_logs/'  # folder to save logs 
-  sub_folder: 'baseline'  # logging sub-folder
+  sub_folder: 'baseline-submission'  # logging sub-folder
   precision: 32  # bit precision of weights. 32 or 16 
   logging: True  # Toggle logging on/off
 dataset: 
