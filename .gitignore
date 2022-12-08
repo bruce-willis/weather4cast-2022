@@ -7,6 +7,7 @@
 *old_data_utils.py
 *old_visualise.py
 *.pdf
+!NeurIPS_2022_weather4cast_slides.pdf
 *.pkl
 split_generation_logs/
 ./plots

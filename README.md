@@ -5,7 +5,7 @@ This is the code for our solution to the [NeurIPS 2022 Weather4cast Challenge](h
 ## Overview
 We first introduce a set of configurations that can be applied and enhance results for almost any model as well as baseline-specific improvements. We then propose two approaches based on Vision Transformers: the interpretation of the input as a video or as a 3D medical image and the use of problem-specific VIVIT or SWIN-UNETR Transformer respectively. As in previous years, we report that ensembling different trained models yield the most competitive results. Our selected algorithm has placed ex-aequo 3rd in the competition finals, which suggests that the use of transformers for weather prediction is a promising research direction that needs more investigation. 
 
-For more details, please refer to our [paper](https://arxiv.org/abs/2212.02456) "Solving the Weather4cast Challenge via Visual Transformers for 3D Images".
+For more details, please refer to our [paper](https://arxiv.org/abs/2212.02456) "Solving the Weather4cast Challenge via Visual Transformers for 3D Images" or [slides](NeurIPS_2022_weather4cast_slides.pdf).
 
 ## How to run
 1. Create python environment and install the requirements: `pip install -r requirements.txt`
