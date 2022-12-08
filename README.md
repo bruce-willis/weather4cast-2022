@@ -36,9 +36,9 @@ Our approach scored 0.2997844 in the heldout core leaderboard and ranked ex-aequ
 
 
 ## Team Members
-* Yury Belousov 
-* Sergey Polezhaev
-* Brian Pulfer
+* [Yury Belousov](https://bruce-willis.github.io/)
+* [Sergey Polezhaev](https://www.linkedin.com/in/sergey-polezhaev/)
+* [Brian Pulfer](https://www.brianpulfer.ch/)
 
 ## Citing us
 ```
